@@ -28,7 +28,6 @@ export default Home = ({ navigation: { navigate } }) => {
               color="#BDBDBD"
               style={{ marginRight: 16 }}
             />
-            // <Button title="exit" onPress={() => navigate("Login")} />
           ),
           tabBarIcon: ({ focused, size, color }) => {
             return <Ionicons name="grid-outline" size={24} color="black" />;
