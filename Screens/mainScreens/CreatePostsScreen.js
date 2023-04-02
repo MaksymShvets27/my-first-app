@@ -16,6 +16,10 @@ import { useEffect, useState } from "react";
 
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../../firebase/config";
+import { doc, setDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 export default CreatePostsScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
@@ -23,9 +27,10 @@ export default CreatePostsScreen = ({ navigation }) => {
   const [photo, setPhoto] = useState("");
   const [camera, setCamera] = useState(null);
   const [locationSet, setLocationSet] = useState({});
-
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
+  const { userId, userName } = useSelector((state) => state.auth);
+  console.log(userName);
   useEffect(() => {
     (async () => {
       await Camera.requestCameraPermissionsAsync();
@@ -41,15 +46,40 @@ export default CreatePostsScreen = ({ navigation }) => {
     const photoCam = await camera.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
     setPhoto(photoCam.uri);
-    console.log(location);
     setLocationSet({
       latitube: location.coords.latitude,
       longitube: location.coords.longitude,
     });
   };
 
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const postId = Date.now().toString();
+
+    const storageRef = ref(storage, `postImages/${postId}`);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef).then((url) => {
+      return url;
+    });
+    return { photoURL, postId };
+  };
+
+  const uploadPostToServer = async () => {
+    const { photoURL, postId } = await uploadPhotoToServer();
+    await setDoc(doc(db, "posts", `${postId}`), {
+      photoURL,
+      title,
+      place,
+      locationSet,
+      userId,
+      userName,
+    });
+  };
+
   const publish = () => {
-    navigation.navigate("DefaultScreen", { photo, title, place, locationSet });
+    uploadPostToServer();
+    navigation.navigate("DefaultScreen");
     clearState();
     keyboardHide();
   };

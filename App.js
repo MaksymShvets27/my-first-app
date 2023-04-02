@@ -1,33 +1,13 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
-import LoginScreen from "./Screens/authScreens/LoginScreen";
-import RegistrationScreen from "./Screens/authScreens/RegistrationScreen";
-import Home from "./Screens/mainScreens/Home";
-
-const AuthStack = createStackNavigator();
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { Main } from "./component/main";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <AuthStack.Navigator>
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Registration"
-          component={RegistrationScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Home"
-          component={Home}
-        />
-      </AuthStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <Main />
+    </Provider>
   );
 }

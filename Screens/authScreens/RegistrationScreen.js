@@ -12,6 +12,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperations";
 
 export default function RegistrationScreen({ navigation }) {
   const [userName, setUserName] = useState("");
@@ -19,17 +21,18 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
+  const dispatch = useDispatch();
+
   const keyboardHide = () => {
     setIsShowKeyboard(false), Keyboard.dismiss();
   };
 
   const onSubmit = () => {
-    console.log(`name:${userName}, email:${email}, password:${password}`);
+    dispatch(authSignUpUser({ email, password, userName }));
     setUserName("");
     setEmail("");
     setPassword("");
     keyboardHide();
-    navigation.navigate("Home");
   };
   return (
     <TouchableWithoutFeedback onPress={() => keyboardHide()}>

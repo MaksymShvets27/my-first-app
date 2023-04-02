@@ -3,16 +3,21 @@ import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
-export default DefaultPostsScreen = ({ route, navigation }) => {
+export default DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
+  const getAllPost = async () => {
+    onSnapshot(collection(db, "posts"), (data) => {
+      setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
-  console.log(posts);
+    getAllPost();
+  }, []);
   return (
     <View style={styles.container}>
       <FlatList
@@ -21,7 +26,7 @@ export default DefaultPostsScreen = ({ route, navigation }) => {
         renderItem={({ item }) => {
           return (
             <View style={styles.item}>
-              <Image source={{ uri: item.photo }} style={styles.image} />
+              <Image source={{ uri: item.photoURL }} style={styles.image} />
               <Text style={styles.title}>{item.title}</Text>
               <View style={styles.post_item_bottom_bar}>
                 <View
@@ -47,7 +52,7 @@ export default DefaultPostsScreen = ({ route, navigation }) => {
                   size={24}
                   color="black"
                   onPress={() => {
-                    navigation.navigate("Comments");
+                    navigation.navigate("Comments", { postId: item.id });
                   }}
                 />
               </View>
@@ -65,7 +70,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    height: 240,
+    height: 150,
+    borderRadius: 25,
   },
   text: {
     color: "black",
@@ -74,13 +80,12 @@ const styles = StyleSheet.create({
   title: {
     height: 30,
     marginTop: 30,
-    borderColor: "#e8e8e8",
-    borderBottomWidth: 1,
   },
   item: {
-    borderWidth: 3,
-    borderColor: "red",
-    padding: 20,
+    borderWidth: 1,
+    borderColor: "#ff6c00",
+    padding: 30,
+    borderRadius: 25,
     marginVertical: 8,
     marginHorizontal: 16,
   },
