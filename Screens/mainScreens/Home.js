@@ -6,9 +6,16 @@ import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { authSignOutUser } from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 const MainTab = createBottomTabNavigator();
 
 export default Home = ({ navigation: { navigate } }) => {
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <MainTab.Navigator
       screenOptions={{
@@ -22,7 +29,7 @@ export default Home = ({ navigation: { navigate } }) => {
           tabBarActiveTintColor: null,
           headerRight: () => (
             <Ionicons
-              onPress={() => navigate("Login")}
+              onPress={signOut}
               name="exit-outline"
               size={24}
               color="#BDBDBD"
@@ -64,7 +71,8 @@ export default Home = ({ navigation: { navigate } }) => {
       />
       <MainTab.Screen
         options={{
-          headerShown: false,
+          title: "Ваш профиль",
+          headerTitleAlign: "center",
           tabBarActiveTintColor: null,
           tabBarIcon: ({ focused, size, color }) => {
             return <AntDesign name="user" size={24} color="black" />;

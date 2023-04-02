@@ -12,11 +12,15 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false), Keyboard.dismiss();
@@ -27,7 +31,7 @@ export default function LoginScreen({ navigation }) {
     setEmail("");
     setPassword("");
     keyboardHide();
-    navigation.navigate("Home");
+    dispatch(authSignInUser({ email, password }));
   };
   return (
     <TouchableWithoutFeedback onPress={() => keyboardHide()}>
